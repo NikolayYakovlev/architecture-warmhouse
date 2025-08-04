@@ -1,0 +1,12 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(auth, "Сервис аутентификации", "OAuth2") {
+  Component(auth_api, "API", "Go", "REST-интерфейс для аутентификации и авторизации")
+  Component(token_issuer, "Выдача токенов", "Go", "Генерация и валидация JWT/OAuth2 токенов")
+  Component(user_repo, "Репозиторий пользователей", "Go", "Хранение данных пользователей и сессий")
+}
+
+Rel(auth_api, token_issuer, "Запросы на выдачу и проверку токенов")
+Rel(token_issuer, user_repo, "Чтение/запись данных пользователей")
+@enduml

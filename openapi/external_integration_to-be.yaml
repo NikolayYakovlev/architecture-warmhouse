@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: External Integration Service API
+  version: 1.0.0
+  description: API для интеграции с внешними устройствами и сервисами
+
+servers:
+  - url: http://localhost:8084
+    description: Локальный сервер
+
+paths:
+  /external-devices:
+    get:
+      summary: Получить список внешних устройств
+      tags: [ExternalDevice]
+      responses:
+        '200':
+          description: Список внешних устройств
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalDevice'
+    post:
+      summary: Зарегистрировать новое внешнее устройство
+      tags: [ExternalDevice]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalDeviceCreateRequest'
+      responses:
+        '201':
+          description: Внешнее устройство зарегистрировано
+
+  /external-devices/{externalDeviceId}:
+    get:
+      summary: Получить информацию о внешнем устройстве
+      tags: [ExternalDevice]
+      parameters:
+        - name: externalDeviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о внешнем устройстве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalDevice'
+    put:
+      summary: Обновить внешнее устройство
+      tags: [ExternalDevice]
+      parameters:
+        - name: externalDeviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalDeviceUpdateRequest'
+      responses:
+        '200':
+          description: Внешнее устройство обновлено
+    delete:
+      summary: Удалить внешнее устройство
+      tags: [ExternalDevice]
+      parameters:
+        - name: externalDeviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Внешнее устройство удалено
+
+  /external-devices/{externalDeviceId}/commands:
+    post:
+      summary: Отправить команду внешнему устройству
+      tags: [ExternalDevice]
+      parameters:
+        - name: externalDeviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalDeviceCommandRequest'
+      responses:
+        '202':
+          description: Команда принята к исполнению
+
+components:
+  schemas:
+    ExternalDevice:
+      type: object
+      properties:
+        external_device_id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        location:
+          type: string
+
+    ExternalDeviceCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+      required:
+        - name
+        - type
+
+    ExternalDeviceUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        location:
+          type: string
+
+    ExternalDeviceCommandRequest:
+      type: object
+      properties:
+        command:
+          type: string
+          description: Команда для внешнего устройства
+        params:
+          type: object
+          additionalProperties: true
+          description: Дополнительные параметры команды
+      required:
+        - command

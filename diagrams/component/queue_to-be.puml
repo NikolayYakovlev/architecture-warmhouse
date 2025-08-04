@@ -1,0 +1,12 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(queue, "Event Bus", "Kafka/RabbitMQ") {
+  Component(api, "API", "Kafka/RabbitMQ", "Подписка, получение и публикация событий")
+  Component(topic_manager, "Менеджер топиков/очередей", "Kafka/RabbitMQ", "Создание и управление топиками/очередями")
+  Component(retention_manager, "Менеджер хранения", "Kafka/RabbitMQ", "Управление временем хранения сообщений")
+}
+
+Rel(api, topic_manager, "Публикация и получение событий в топики/очереди")
+Rel(topic_manager, retention_manager, "Управление хранением сообщений")
+@enduml

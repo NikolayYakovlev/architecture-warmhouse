@@ -1,0 +1,16 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(device_mgmt, "Сервис управления устройствами", "Go") {
+  Component(api, "API", "Go", "REST-интерфейс для управления устройствами")
+  Component(command_handler, "Обработчик команд", "Go", "Валидация и обработка команд пользователя и сценариев")
+  Component(state_manager, "Менеджер состояния устройств", "Go", "Хранение и обновление статуса устройств")
+  Component(device_repo, "Репозиторий устройств", "Go", "Работа с базой данных")
+  Component(ext_integration_client, "Клиент интеграции", "Go", "Взаимодействие с сервисом интеграции с внешними устройствами")
+}
+
+Rel(api, command_handler, "Передаёт команды управления")
+Rel(command_handler, state_manager, "Изменяет состояние устройств")
+Rel(state_manager, device_repo, "Читает/записывает данные устройств")
+Rel(state_manager, ext_integration_client, "Передаёт команды внешним устройствам")
+@enduml

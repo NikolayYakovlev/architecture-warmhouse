@@ -1,0 +1,17 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Пользователь", "Владелец дома, использующий систему для мониторинга и управления отоплением")
+Person_Ext(installer, "Специалист по установке", "Устанавливает и подключает датчики к системе")
+
+System(smart_home, "Smart Home", "Система мониторинга температуры и управления отоплением")
+
+System_Ext(temperature_api, "Temperature Api", "Внешний сервис температуры для получения данных температуры")
+System_Ext(devices, "Датчик температуры", "Система мониторинга температуры и управления отоплением")
+
+Rel(user, smart_home, "Управляет отоплением, проверяет температуру")
+Rel(installer, smart_home, "Настраивает подключение датчика")
+Rel(smart_home, temperature_api, "Запрашивает температуру")
+Rel(temperature_api, devices, "Запрашивает температуру с устройства", "Стандартный протокол")
+Rel(installer, devices, "Устанавливает и подключает")
+@enduml

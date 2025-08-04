@@ -1,0 +1,16 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(telemetry, "Сервис телеметрии", "Go") {
+  Component(collector, "Сборщик данных", "Go", "Приём данных с устройств через External Integration Service")
+  Component(processor, "Обработчик телеметрии", "Go", "Анализ, агрегация, фильтрация данных")
+  Component(event_publisher, "Публикатор событий", "Go", "Публикация событий в Event Bus")
+  Component(telemetry_repo, "Репозиторий телеметрии", "Go", "Хранение данных в БД")
+  Component(ext_integration_client, "Клиент интеграции", "Go", "Взаимодействие с сервисом интеграции с внешними устройствами")
+}
+
+Rel(collector, processor, "Передаёт сырые данные")
+Rel(processor, telemetry_repo, "Сохраняет обработанные данные")
+Rel(processor, event_publisher, "Публикует события")
+Rel(collector, ext_integration_client, "Передаёт команды внешним устройствам")
+@enduml

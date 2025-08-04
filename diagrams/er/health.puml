@@ -1,0 +1,49 @@
+@startuml
+
+entity "Service" as service {
+  * service_id : number
+  --
+  name : varchar
+  type : varchar
+  status : varchar
+  last_checked : datetime
+  response_time_ms : number
+  details : text
+}
+
+entity "HealthCheck" as health_check {
+  * check_id : number
+  --
+  service_id : number <<FK>>
+  check_time : datetime
+  status : varchar
+  response_time_ms : number
+  message : text
+}
+
+entity "Incident" as incident {
+  * incident_id : number
+  --
+  service_id : number <<FK>>
+  detected_at : datetime
+  resolved_at : datetime
+  severity : varchar
+  description : text
+  status : varchar
+}
+
+entity "Metric" as metric {
+  * metric_id : number
+  --
+  service_id : number <<FK>>
+  timestamp : datetime
+  metric_name : varchar
+  unit : varchar
+  value : float
+}
+
+service ||--o{ health_check : "проверки"
+service ||--o{ incident : "инциденты"
+service ||--o{ metric : "метрики"
+
+@enduml

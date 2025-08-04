@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: Health Monitoring Service API
+  version: 1.0.0
+  description: API для мониторинга состояния микросервисов и инфраструктуры
+
+servers:
+  - url: http://localhost:8086
+    description: Локальный сервер
+
+paths:
+  /health:
+    get:
+      summary: Получить общее состояние системы
+      tags: [Health]
+      responses:
+        '200':
+          description: Актуальное состояние всех сервисов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemHealth'
+
+  /health/services:
+    get:
+      summary: Получить список сервисов и их статусы
+      tags: [Health]
+      responses:
+        '200':
+          description: Список сервисов и их статусы
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceStatus'
+
+  /health/services/{serviceId}:
+    get:
+      summary: Получить подробную информацию о сервисе
+      tags: [Health]
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Детальная информация о сервисе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDetails'
+
+  /health/incidents:
+    get:
+      summary: Получить список инцидентов
+      tags: [Incident]
+      responses:
+        '200':
+          description: Список инцидентов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Incident'
+
+components:
+  schemas:
+    SystemHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Общий статус системы
+        checked_at:
+          type: string
+          format: date-time
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceStatus'
+
+    ServiceStatus:
+      type: object
+      properties:
+        service_id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+          description: Статус сервиса
+        last_checked:
+          type: string
+          format: date-time
+
+    ServiceDetails:
+      type: object
+      properties:
+        service_id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        last_checked:
+          type: string
+          format: date-time
+        response_time_ms:
+          type: number
+        details:
+          type: string
+        incidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+
+    Incident:
+      type: object
+      properties:
+        incident_id:
+          type: integer
+        service_id:
+          type: integer
+        detected_at:
+          type: string
+          format: date-time
+        resolved_at:
+          type: string
+          format: date-time
+        severity:
+          type: string
+          description: Уровень критичности
+        description:
+          type: string
+        status:
+          type: string
+          description: Статус инцидента

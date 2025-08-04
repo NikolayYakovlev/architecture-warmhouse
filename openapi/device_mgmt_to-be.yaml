@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: Device Management Service API
+  version: 1.0.0
+  description: API для управления устройствами умного дома
+
+servers:
+  - url: http://localhost:8082
+    description: Локальный сервер
+
+paths:
+  /devices:
+    get:
+      summary: Получить список устройств
+      tags: [Device]
+      responses:
+        '200':
+          description: Список устройств
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    post:
+      summary: Добавить новое устройство
+      tags: [Device]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreateRequest'
+      responses:
+        '201':
+          description: Устройство создано
+
+  /devices/{deviceId}:
+    get:
+      summary: Получить информацию об устройстве
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация об устройстве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+    put:
+      summary: Обновить устройство
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateRequest'
+      responses:
+        '200':
+          description: Устройство обновлено
+    delete:
+      summary: Удалить устройство
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Устройство удалено
+
+  /devices/{deviceId}/commands:
+    post:
+      summary: Отправить команду устройству
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommandRequest'
+      responses:
+        '202':
+          description: Команда принята к исполнению
+
+components:
+  schemas:
+    Device:
+      type: object
+      properties:
+        device_id:
+          type: integer
+        name:
+          type: string
+        type_id:
+          type: integer
+        module_id:
+          type: integer
+        serial_number:
+          type: string
+        status:
+          type: string
+        location:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        last_updated:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    DeviceCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type_id:
+          type: integer
+        module_id:
+          type: integer
+        serial_number:
+          type: string
+        location:
+          type: string
+      required:
+        - name
+        - type_id
+        - module_id
+
+    DeviceUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        location:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+
+    DeviceCommandRequest:
+      type: object
+      properties:
+        command:
+          type: string
+          description: Команда для устройства
+        params:
+          type: object
+          additionalProperties: true
+          description: Дополнительные параметры команды
+      required:
+        - command

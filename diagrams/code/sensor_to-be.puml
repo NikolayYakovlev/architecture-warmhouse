@@ -1,0 +1,30 @@
+@startuml
+class Sensor {
+  - id: int
+  - name: string
+  - location: string
+  - type: string
+  - value: float
+  - status: string
+  - updated_at: datetime
+  - created_at: datetime
+}
+
+class SensorRepository {
+  + CreateSensor(sensor: Sensor): error
+  + UpdateSensor(sensor: Sensor): error
+  + DeleteSensor(id: int): error
+  + GetSensorByID(id: int): Sensor
+  + GetAllSensors(): []Sensor
+}
+
+class DeviceManagementService {
+  + AddSensor(sensor: Sensor): error
+  + UpdateSensorValue(id: int, value: float): error
+  + GetSensorByLocation(location: string): Sensor
+  + GetAllSensors(): []Sensor
+}
+
+DeviceManagementService --> SensorRepository
+SensorRepository --> Sensor
+@enduml

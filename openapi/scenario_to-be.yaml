@@ -1,0 +1,220 @@
+openapi: 3.0.3
+info:
+  title: Scenario Service API
+  version: 1.0.0
+  description: API для управления пользовательскими сценариями автоматизации
+
+servers:
+  - url: http://localhost:8087
+    description: Локальный сервер
+
+paths:
+  /scenarios:
+    get:
+      summary: Получить список сценариев пользователя
+      tags: [Scenario]
+      responses:
+        "200":
+          description: Список сценариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scenario"
+    post:
+      summary: Создать новый сценарий
+      tags: [Scenario]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScenarioCreateRequest"
+      responses:
+        "201":
+          description: Сценарий создан
+
+  /scenarios/{scenarioId}:
+    get:
+      summary: Получить информацию о сценарии
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Информация о сценарии
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scenario"
+    put:
+      summary: Обновить сценарий
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScenarioUpdateRequest"
+      responses:
+        "200":
+          description: Сценарий обновлён
+    delete:
+      summary: Удалить сценарий
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Сценарий удалён
+
+  /scenarios/{scenarioId}/run:
+    post:
+      summary: Запустить сценарий вручную
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "202":
+          description: Сценарий запущен
+
+  /scenarios/{scenarioId}/history:
+    get:
+      summary: Получить историю запусков сценария
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: История запусков
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScenarioHistory"
+
+components:
+  schemas:
+    Scenario:
+      type: object
+      properties:
+        scenario_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioStep"
+        triggers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioTrigger"
+
+    ScenarioCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioStep"
+        triggers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioTrigger"
+      required:
+        - name
+        - steps
+
+    ScenarioUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioStep"
+        triggers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioTrigger"
+
+    ScenarioStep:
+      type: object
+      properties:
+        step_id:
+          type: integer
+        order_num:
+          type: integer
+        action_type:
+          type: string
+          description: Тип действия
+        action_params:
+          type: string
+
+    ScenarioTrigger:
+      type: object
+      properties:
+        trigger_id:
+          type: integer
+        trigger_type:
+          type: string
+          description: Тип триггера
+        trigger_params:
+          type: string
+
+    ScenarioHistory:
+      type: object
+      properties:
+        history_id:
+          type: integer
+        executed_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+        result:
+          type: string
