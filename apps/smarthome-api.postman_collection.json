@@ -7,6 +7,40 @@
     },
     "item": [
         {
+            "name": "temperature-api",
+            "item": [
+                {
+                    "name": "Get Temperature",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8081/temperature?location=Living Room&sensorID=5",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "temperature"
+                            ],
+                            "query": [
+                                {
+                                    "key": "location",
+                                    "value": "Living Room"
+                                },
+                                {
+                                    "key": "sensorID",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Health Check",
             "request": {
                 "method": "GET",
@@ -187,6 +221,29 @@
                     ]
                 },
                 "description": "Update a sensor's value and status"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Temperature",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/api/v1/sensors/temperature/Living%20Room",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "api",
+                        "v1",
+                        "sensors",
+                        "temperature",
+                        "Living%20Room"
+                    ]
+                }
             },
             "response": []
         }

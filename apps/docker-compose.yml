@@ -22,8 +22,13 @@ services:
       - smarthome-network
   ## тут нужно добавить настройки
 
-  ## temperature-api:
-  ## тут нужно добавить приложение
+  temperature-api:
+    build: ./temperature-service
+    container_name: temperature-service
+    ports:
+      - "8081:8081"
+    networks:
+      - smarthome-network
 
   app:
     build:
@@ -33,8 +38,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      ## temperature-api:
-      ##   condition: service_started
+      temperature-api:
+        condition: service_started
     environment:
       - DATABASE_URL=postgres://postgres:postgres@smarthome-postgres:5432/smarthome
       - TEMPERATURE_API_URL=http://temperature-api:8081
