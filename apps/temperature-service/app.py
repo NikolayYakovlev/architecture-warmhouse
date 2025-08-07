@@ -4,10 +4,10 @@ import random, datetime
 
 app = Flask(__name__)
 
-@app.route('/temperature', methods=['GET'])
-def get_temperature():
+@app.route('/temperature', methods=['GET'], strict_slashes=False)
+@app.route('/temperature/<sensorID>', methods=['GET'], strict_slashes=False)
+def get_temperature(sensorID=None):
     location = request.args.get('location', '')
-    sensorID = request.args.get('sensorID', '')
 
     # If no location is provided, use a default based on sensor ID
     if not location:
