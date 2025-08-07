@@ -1,0 +1,14 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(scenario, "Сервис сценариев", "Go") {
+  Component(api, "API", "Go", "REST-интерфейс для управления сценариями")
+  Component(engine, "Движок сценариев", "Go", "Выполнение и обработка сценариев")
+  Component(subscriber, "Подписчик на события", "Go", "Подписка на события из Event Bus")
+  Component(scenario_repo, "Репозиторий сценариев", "Go", "Хранение сценариев и истории выполнения")
+}
+
+Rel(subscriber, engine, "Передаёт события для обработки")
+Rel(engine, scenario_repo, "Читает/записывает сценарии и историю")
+Rel(api, scenario_repo, "Управляет сценариями")
+@enduml

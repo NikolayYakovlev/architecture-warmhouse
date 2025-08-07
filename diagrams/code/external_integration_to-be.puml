@@ -1,0 +1,25 @@
+@startuml
+class ExternalIntegrationService {
+  + GetTemperature(sensorID: string): float
+  + SendCommand(sensorID: string, command: string): error
+}
+
+class ProtocolAdapter {
+  + RequestDeviceValue(sensorID: string, type: string): float
+  + SendDeviceCommand(sensorID: string, command: string): error
+}
+
+class TemperatureApiClient {
+  + GetTemperature(sensorID: string): float
+}
+
+class GateApiClient {
+  + Open(sensorID: string): float
+  + Close(sensorID: string): float
+  + CloseDoorsAndCallPolice(): error
+}
+
+ExternalIntegrationService --> ProtocolAdapter
+ProtocolAdapter --> TemperatureApiClient
+ProtocolAdapter --> GateApiClient
+@enduml

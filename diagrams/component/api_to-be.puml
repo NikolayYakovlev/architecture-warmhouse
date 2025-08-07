@@ -1,0 +1,16 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(api, "Smart Home API Gateway", "Go") {
+  Component(rest_api, "REST API", "Go", "Обработка HTTP-запросов пользователей и клиентов")
+  Component(auth_proxy, "Прокси аутентификации", "Go", "Проверка токенов и прав доступа", "123")
+  Component(request_router, "Маршрутизатор запросов", "Go", "Маршрутизация запросов к микросервисам")
+  Component(rate_limiter, "Ограничитель запросов", "Go", "Контроль частоты обращений")
+  Component(api_docs, "Документация API", "Swagger/OpenAPI", "Описание и тестирование API")
+}
+
+Rel(rest_api, auth_proxy, "Проверка токена пользователя")
+Rel(auth_proxy, request_router, "Передача авторизованных запросов")
+Rel(request_router, api_docs, "Доступ к документации")
+Rel(request_router, rate_limiter, "Проверка лимитов")
+@enduml

@@ -1,0 +1,121 @@
+openapi: 3.0.3
+info:
+  title: Telemetry Service API
+  version: 1.0.0
+  description: API для сбора, хранения и получения телеметрии устройств
+
+servers:
+  - url: http://localhost:8083
+    description: Локальный сервер
+
+paths:
+  /telemetry:
+    get:
+      summary: Получить список записей телеметрии
+      tags: [Telemetry]
+      parameters:
+        - name: device_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: metric
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Список записей телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryData'
+    post:
+      summary: Добавить новую запись телеметрии
+      tags: [Telemetry]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryDataCreateRequest'
+      responses:
+        '201':
+          description: Запись телеметрии добавлена
+
+  /telemetry/{telemetryId}:
+    get:
+      summary: Получить запись телеметрии по ID
+      tags: [Telemetry]
+      parameters:
+        - name: telemetryId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Запись телеметрии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryData'
+
+components:
+  schemas:
+    TelemetryData:
+      type: object
+      properties:
+        telemetry_id:
+          type: integer
+        device_id:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        metric:
+          type: string
+          description: Тип метрики
+        unit:
+          type: string
+        value:
+          type: number
+        source:
+          type: string
+          description: Источник данных
+
+    TelemetryDataCreateRequest:
+      type: object
+      properties:
+        device_id:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        metric:
+          type: string
+        unit:
+          type: string
+        value:
+          type: number
+        source:
+          type: string
+      required:
+        - device_id
+        - timestamp
+        -

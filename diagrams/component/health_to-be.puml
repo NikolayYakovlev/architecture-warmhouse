@@ -1,0 +1,12 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(health, "Сервис мониторинга состояния системы", "Go") {
+  Component(health_api, "Health API", "Go", "REST-интерфейс для проверки состояния")
+  Component(service_checker, "Проверка сервисов", "Go", "Проверка доступности микросервисов")
+  Component(db_checker, "Проверка базы данных", "Go", "Проверка состояния БД")
+}
+
+Rel(health_api, service_checker, "Запрос статуса сервисов")
+Rel(health_api, db_checker, "Запрос статуса БД")
+@enduml

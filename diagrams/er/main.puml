@@ -1,0 +1,150 @@
+@startuml
+
+' https://plantuml.com/ie-diagram
+'skinparam linetype ortho
+
+entity "User" as user {
+  * user_id : number
+  --
+  username : varchar
+  email : varchar
+  password_hash : varchar
+  status : varchar
+  created_at : datetime
+}
+
+entity "House" as house {
+  * house_id : number
+  --
+  user_id : number <<FK>>
+  address : varchar
+  name : varchar
+}
+entity "Module" as module {
+  * module_id : number
+  house_id : number <<FK>>
+  --
+  name : varchar
+  config : text
+}
+
+entity "Device" as device {
+  * device_id : number
+  serial_number : varchar
+  type_id : number <<FK>>
+  module_id : number <<FK>>
+  --
+  name : varchar
+  location : varchar
+  unit : varchar
+  value : float
+  status : varchar
+  last_updated : datetime
+  created_at : datetime
+}
+
+entity "DeviceType" as devtype {
+  * type_id : number
+  --
+  name : varchar
+  description : varchar
+}
+
+
+entity "TelemetryData" as telemetry {
+  * telemetry_id : number
+  device_id : number <<FK>>
+  --
+  timestamp : datetime
+  metric : varchar
+  unit : varchar
+  value : float
+  source : varchar
+}
+
+entity "TelemetryAlert" as alert {
+  * alert_id : number
+  device_id : number <<FK>>
+  --
+  timestamp : datetime
+  metric : varchar
+  value : float
+  alert_type : varchar
+  description : varchar
+}
+
+entity "Role" as role {
+  * role_id : number
+  --
+  name : varchar
+  description : varchar
+}
+
+entity "UserRole" as user_role {
+  * user_role_id : number
+  --
+  user_id : number <<FK>>
+  role_id : number <<FK>>
+}
+
+entity "Session" as session {
+  * session_id : number
+  --
+  user_id : number <<FK>>
+  token : varchar
+  created_at : datetime
+  expires_at : datetime
+  is_active : boolean
+}
+
+entity "Scenario" as scenario {
+  * scenario_id : number
+  --
+  user_id : number <<FK>>
+  name : varchar
+  description : varchar
+  is_active : boolean
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "ScenarioStep" as step {
+  * step_id : number
+  --
+  scenario_id : number <<FK>>
+  order_num : number
+  action_type : varchar
+  action_params : text
+}
+
+entity "ScenarioTrigger" as trigger {
+  * trigger_id : number
+  --
+  scenario_id : number <<FK>>
+  trigger_type : varchar
+  trigger_params : text
+}
+
+entity "ScenarioHistory" as history {
+  * history_id : number
+  --
+  scenario_id : number <<FK>>
+  executed_at : datetime
+  status : varchar
+  result : text
+}
+
+user ||--o{ house : "владеет"
+house ||--o{ module : "содержит"
+module ||--o{ device : "управляет"
+devtype ||--o{ device : "тип"
+device ||--o{ telemetry : "генерирует"
+device ||--o{ alert : "вызывает"
+user ||--o{ user_role : "имеет"
+role ||--o{ user_role : "назначена"
+user ||--o{ session : "сессии"
+user ||--o{ scenario : "создаёт"
+scenario ||--o{ step : "состоит из"
+scenario ||--o{ trigger : "имеет"
+scenario ||--o{ history : "исполнялся"
+@enduml

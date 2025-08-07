@@ -1,0 +1,13 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(external_integration, "Сервис интеграции с внешними устройствами", "Go") {
+  Component(api_adapter, "API", "Go", "REST-интерфейс для сервисов приложения")
+  Component(protocol_gateway, "Шлюз протоколов", "Go", "Работа с набором внешних устройств по стандартным протоколам")
+  Component(device_connector, "Коннектор устройств", "Go", "Управление сессиями и соединениями с устройствами")
+}
+
+Rel(api_adapter, protocol_gateway, "Передаёт команды и запросы")
+Rel(protocol_gateway, device_connector, "Управляет соединениями")
+Rel(device_connector, protocol_gateway, "Передаёт данные с устройств")
+@enduml

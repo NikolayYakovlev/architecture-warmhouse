@@ -1,0 +1,39 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь", "Владелец дома, использующий SaaS-экосистему для управления умным домом")
+
+System_Boundary(system, "Экосистема умного дома (SaaS)") {
+  Container(api, "Smart Home API Gateway", "Go", "Единая точка входа")
+  Container(auth, "Сервис аутентификации", "OAuth2", "Управление пользователями и доступом")
+  Container(health, "Сервис мониторинга состояния системы", "Отслеживает состояние системы, health-check, метрики")
+  Container(scenario, "Сервис сценариев", "Go", "Редактор и исполнитель пользовательских сценариев")
+  Container(device_mgmt, "Сервис управления устройствами", "Go", "Регистрация, настройка, мониторинг и управление устройствами")
+  Container(telemetry, "Сервис телеметрии", "Go", "Сбор и хранение данных с устройств")
+  Container(external_integration, "Сервис интеграции с внешними устройствами", "Go", "Получение данных и управление внешними устройствами")
+  ContainerDb(db, "Основная БД", "PostgreSQL", "Пользователи, устройства, сценарии, телеметрия")
+  Container(queue, "Event Bus", "Kafka/RabbitMQ", "Передача событий телеметрии")
+}
+
+System_Ext(temperature_api, "Temperature Api", "Внешний сервис работы с устройствами на примере датчиков температуры.\n\n(Универсальный Gateway для любых устройств – Device API,\nили набор внешних сервисов для работы с разными устройствами: temperature_api, light_api, gate_api, camera_api и др.)")
+System_Ext(device, "Устройство партнёра", "Умные устройства (отопление, свет, ворота, камеры и др.)")
+
+Rel(user, api, "Управляет устройствами, настраивает сценарии")
+Rel(api, auth, "Аутентификация и авторизация пользователей, валидация выданных токенов", "OAuth2")
+Rel(api, health, "Просматривает состояние системы")
+Rel(api, scenario, "Управление и запуск пользовательских сценариев", "REST API")
+Rel(api, device_mgmt, "Управление устройствами (регистрация, настройка, мониторинг)", "REST API")
+Rel(scenario, device_mgmt, "Получение информации об устройствах для сценариев", "REST API")
+Rel(device_mgmt, external_integration, "Передача команд управления устройствами", "REST API")
+Rel(telemetry, external_integration, "Получение телеметрии с устройств", "REST API")
+Rel(auth, db, "Хранение данных пользователей и сессий", "pgxpool/SQL")
+Rel(scenario, db, "Хранение сценариев и истории их выполнения", "pgxpool/SQL")
+Rel(device_mgmt, db, "Хранение информации об устройствах", "pgxpool/SQL")
+Rel(telemetry, db, "Хранение телеметрии и событий", "pgxpool/SQL")
+
+Rel(telemetry, queue, "Публикация событий телеметрии")
+Rel(scenario, queue, "Подписка на события для реактивных сценариев")
+
+Rel(external_integration, temperature_api, "Запрашивает температуру", "REST API")
+Rel(temperature_api, device, "Стандартный протокол")
+@enduml

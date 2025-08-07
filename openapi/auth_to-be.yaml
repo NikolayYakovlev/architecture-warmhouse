@@ -1,0 +1,156 @@
+openapi: 3.0.3
+info:
+  title: Auth Service API
+  version: 1.0.0
+  description: API для аутентификации и управления пользователями
+
+servers:
+  - url: http://localhost:8085
+    description: Локальный сервер
+
+paths:
+  /auth/login:
+    post:
+      summary: Аутентификация пользователя
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация, возвращает токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Неверные учетные данные
+
+  /auth/validate:
+    post:
+      summary: Проверка валидности токена
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenValidationRequest'
+      responses:
+        '200':
+          description: Токен валиден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenValidationResponse'
+        '401':
+          description: Токен невалиден
+
+  /users:
+    post:
+      summary: Регистрация нового пользователя
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '201':
+          description: Пользователь зарегистрирован
+
+  /users/{userId}:
+    get:
+      summary: Получить информацию о пользователе
+      tags: [User]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    AuthToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          description: Время жизни токена в секундах
+
+    TokenValidationRequest:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+
+    TokenValidationResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        user_id:
+          type: integer
+        username:
+          type: string
+
+    UserRegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
+
+    User:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time

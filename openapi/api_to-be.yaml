@@ -1,0 +1,502 @@
+openapi: 3.0.3
+info:
+  title: Smart Home API Gateway
+  version: 1.0.0
+  description: API Gateway для управления умным домом
+
+servers:
+  - url: http://localhost:8081
+    description: Локальный сервер
+
+paths:
+  /auth/login:
+    post:
+      summary: Аутентификация пользователя
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация, возвращает токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Неверные учетные данные
+
+  /auth/validate:
+    post:
+      summary: Проверка валидности токена
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenValidationRequest'
+      responses:
+        '200':
+          description: Токен валиден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenValidationResponse'
+        '401':
+          description: Токен невалиден
+
+  /devices:
+    get:
+      summary: Получить список устройств
+      tags: [Device]
+      responses:
+        '200':
+          description: Список устройств
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    post:
+      summary: Добавить новое устройство
+      tags: [Device]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '201':
+          description: Устройство создано
+
+  /devices/{deviceId}:
+    get:
+      summary: Получить информацию об устройстве
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация об устройстве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+    put:
+      summary: Обновить устройство
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Устройство обновлено
+    delete:
+      summary: Удалить устройство
+      tags: [Device]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Устройство удалено
+
+  /health:
+    get:
+      summary: Получить общее состояние системы
+      tags: [Health]
+      responses:
+        '200':
+          description: Актуальное состояние всех сервисов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemHealth'
+
+  /health/services:
+    get:
+      summary: Получить список сервисов и их статусы
+      tags: [Health]
+      responses:
+        '200':
+          description: Список сервисов и их статусы
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceStatus'
+
+  /health/services/{serviceId}:
+    get:
+      summary: Получить подробную информацию о сервисе
+      tags: [Health]
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Детальная информация о сервисе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDetails'
+
+  /scenarios:
+    get:
+      summary: Получить список сценариев пользователя
+      tags: [Scenario]
+      responses:
+        '200':
+          description: Список сценариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scenario'
+    post:
+      summary: Создать новый сценарий
+      tags: [Scenario]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioCreateRequest'
+      responses:
+        '201':
+          description: Сценарий создан
+
+  /scenarios/{scenarioId}:
+    get:
+      summary: Получить информацию о сценарии
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о сценарии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+    put:
+      summary: Обновить сценарий
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioUpdateRequest'
+      responses:
+        '200':
+          description: Сценарий обновлён
+    delete:
+      summary: Удалить сценарий
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Сценарий удалён
+
+  /scenarios/{scenarioId}/run:
+    post:
+      summary: Запустить сценарий вручную
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '202':
+          description: Сценарий запущен
+
+  /scenarios/{scenarioId}/history:
+    get:
+      summary: Получить историю запусков сценария
+      tags: [Scenario]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: История запусков
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioHistory'
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    AuthToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          description: Время жизни токена в секундах
+
+    TokenValidationRequest:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+
+    TokenValidationResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        user_id:
+          type: integer
+
+    Device:
+      type: object
+      properties:
+        device_id:
+          type: integer
+        name:
+          type: string
+        type_id:
+          type: integer
+        status:
+          type: string
+        location:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+
+
+    SystemHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Общий статус системы
+        checked_at:
+          type: string
+          format: date-time
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceStatus'
+
+    ServiceStatus:
+      type: object
+      properties:
+        service_id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+          description: Статус сервиса
+        last_checked:
+          type: string
+          format: date-time
+
+    ServiceDetails:
+      type: object
+      properties:
+        service_id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        last_checked:
+          type: string
+          format: date-time
+        response_time_ms:
+          type: number
+        details:
+          type: string
+        incidents:
+          type: array
+          items:
+            type: object
+            properties:
+              incident_id:
+                type: integer
+              detected_at:
+                type: string
+                format: date-time
+              resolved_at:
+                type: string
+                format: date-time
+              severity:
+                type: string
+              description:
+                type: string
+              status:
+                type: string
+
+    Scenario:
+      type: object
+      properties:
+        scenario_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioStep'
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioTrigger'
+
+    ScenarioCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioStep'
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioTrigger'
+      required:
+        - name
+        - steps
+
+    ScenarioUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioStep'
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioTrigger'
+
+    ScenarioStep:
+      type: object
+      properties:
+        step_id:
+          type: integer
+        order_num:
+          type: integer
+        action_type:
+          type: string
+          description: Тип действия
+        action_params:
+          type: string
+
+    ScenarioTrigger:
+      type: object
+      properties:
+        trigger_id:
+          type: integer
+        trigger_type:
+          type: string
+          description: Тип триггера
+        trigger_params:
+          type: string
+
+    ScenarioHistory:
+      type: object
+      properties:
+        history_id:
+          type: integer
+        executed_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+        result:
+          type: string

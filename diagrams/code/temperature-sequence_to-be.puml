@@ -1,0 +1,16 @@
+@startuml
+actor User
+participant "Smart Home API Gateway" as APIGW
+participant "DeviceManagementService"
+participant "ExternalIntegrationService"
+participant "temperature-api (external)"
+
+User -> APIGW : GET /sensors/{id}/temperature
+APIGW -> DeviceManagementService : GetSensorByID(id)
+DeviceManagementService -> ExternalIntegrationService : GetTemperature(sensor)
+ExternalIntegrationService -> "temperature-api (external)" : GET /temperature?sensorId={id}
+"temperature-api (external)" --> ExternalIntegrationService : {temperature}
+ExternalIntegrationService --> DeviceManagementService : temperature
+DeviceManagementService --> APIGW : temperature
+APIGW --> User : temperature
+@enduml

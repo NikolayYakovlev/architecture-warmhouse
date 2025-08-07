@@ -1,0 +1,19 @@
+@startuml
+class AuthService {
+  + Authenticate(login: string, password: string): Token
+  + ValidateToken(token: string): bool
+}
+
+class TokenIssuer {
+  + GenerateToken(userID: int): Token
+  + Validate(token: string): bool
+}
+
+class UserRepository {
+  + FindByLogin(login: string): User
+  + Save(user: User): error
+}
+
+AuthService --> TokenIssuer
+AuthService --> UserRepository
+@enduml
